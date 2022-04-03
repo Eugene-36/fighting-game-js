@@ -6,9 +6,106 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fighting Game</title>
     <link rel="stylesheet" href="./style.css" />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+    </style>
   </head>
   <body>
-    <canvas></canvas>
+    <!-- Красный контейнер -->
+    <div style="position: relative; display: inline-block">
+      <!-- Маленький красный контейнер -->
+      <div
+        style="
+          position: absolute;
+          display: flex;
+          width: 100%;
+          align-items: center;
+          padding: 20px;
+        "
+      >
+        <!-- здоровье игрока -->
+        <div
+          style="
+            position: relative;
+            height: 30px;
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+          "
+        >
+          <div
+            style="background-color: yellow; height: 30px; width: 100%"
+          ></div>
+          <div
+            id="playerHealth"
+            style="
+              position: absolute;
+              background-color: blue;
+              right: 0;
+              top: 0;
+              bottom: 0;
+              width: 100%;
+            "
+          ></div>
+        </div>
+        <!-- время -->
+        <div
+          id="timer"
+          style="
+            background-color: red;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          10
+        </div>
+        <!-- здоровье врага -->
+        <div style="position: relative; height: 30px; width: 100%">
+          <div style="background-color: yellow; height: 30px"></div>
+          <div
+            id="enemyHealth"
+            style="
+              position: absolute;
+              background-color: blue;
+              right: 0;
+              top: 0;
+              left: 0;
+              bottom: 0;
+            "
+          ></div>
+        </div>
+
+        <div></div>
+        <!-- ========= -->
+      </div>
+      <div
+        id="displayText"
+        style="
+          position: absolute;
+          color: white;
+
+          align-items: center;
+          justify-content: center;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: none;
+        "
+      >
+        Tie
+      </div>
+
+      <canvas></canvas>
+    </div>
+    <script src="./js/utils.js"></script>
+    <script src="./js/classes.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>

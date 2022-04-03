@@ -9,51 +9,55 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 
 const gravity = 0.7;
 
-class Sprite {
-  constructor({ position, velocity }) {
-    this.position = position;
-    this.velocity = velocity;
-    this.height = 150;
-    this.lastKey;
-  }
+const background = new Sprite({
+  position: {
+    x: 0,
+    y: 0,
+  },
+  imageSrc: './img/background.png',
+});
 
-  draw() {
-    c.fillStyle = 'red';
-    c.fillRect(this.position.x, this.position.y, 50, this.height);
-  }
-
-  update() {
-    this.draw();
-
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
-
-    if (this.position.y + this.height + this.velocity.y >= canvas.height) {
-      this.velocity.y = 0;
-    } else this.velocity.y += gravity;
-  }
-}
+const shop = new Sprite({
+  position: {
+    x: 600,
+    y: 128,
+  },
+  imageSrc: './img/shop.png',
+  scale: 2.75,
+  framesMax: 6,
+});
 
 // Создаём игрока
-const player = new Sprite({
+const player = new Fighter({
   position: {
     x: 0,
     y: 0,
   },
   velocity: {
+    x: 0,
+    y: 0,
+  },
+
+  offset: {
     x: 0,
     y: 0,
   },
 });
 
 // Создаём противника
-const enemy = new Sprite({
+const enemy = new Fighter({
   position: {
     x: 400,
     y: 100,
   },
   velocity: {
     x: 0,
+    y: 0,
+  },
+  color: 'blue',
+
+  offset: {
+    x: -50,
     y: 0,
   },
 });
@@ -79,10 +83,15 @@ const keys = {
   },
 };
 
+decreaseTimer();
+
 function animate() {
   window.requestAnimationFrame(animate);
   c.fillStyle = 'black';
   c.fillRect(0, 0, canvas.width, canvas.height);
+
+  background.update();
+  shop.update();
   player.update();
   enemy.update();
 
@@ -102,14 +111,42 @@ function animate() {
   } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
     enemy.velocity.x = 5;
   }
+
+  //Определяем когда игроки сопрекоснутся. И атака первого игрока
+  if (
+    rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
+    player.isAttacking
+  ) {
+    player.isAttacking = false;
+    console.log('first player hit');
+    enemy.health -= 20;
+
+    document.querySelector('#enemyHealth').style.width = enemy.health + '%';
+
+    console.log('enemy.health', enemy.health);
+  }
+
+  //Определяем когда игроки сопрекоснутся. И атака второго игрока
+  if (
+    rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
+    enemy.isAttacking
+  ) {
+    enemy.isAttacking = false;
+    player.health -= 20;
+    document.querySelector('#playerHealth').style.width = player.health + '%';
+    console.log('second player hit');
+  }
+
+  // Конец игры основнный на здоровье одного из игроков
+  if (enemy.health <= 0 || player.health <= 0) {
+    determineWinner({ player, enemy, timerId });
+  }
 }
 
 animate();
 
 // добавляем события на движение игрока вправо и влево
 window.addEventListener('keydown', (e) => {
-  console.log('e', e.key);
-
   switch (e.key) {
     case 'd':
       keys.d.pressed = true;
@@ -124,7 +161,10 @@ window.addEventListener('keydown', (e) => {
     case 'w':
       player.velocity.y = -20;
       break;
+    case ' ':
+      player.attack();
 
+      break;
     //============ События движения для второго игрока
     case 'ArrowRight':
       keys.ArrowRight.pressed = true;
@@ -139,6 +179,11 @@ window.addEventListener('keydown', (e) => {
     case 'ArrowUp':
       enemy.velocity.y = -20;
       break;
+
+    case 'ArrowDown':
+      enemy.isAttacking = true;
+      break;
+
     default:
       break;
   }
@@ -146,7 +191,6 @@ window.addEventListener('keydown', (e) => {
 
 // добавляем событие чтобы игрок остановился
 window.addEventListener('keyup', (e) => {
-  console.log(e);
   switch (e.key) {
     case 'd':
       keys.d.pressed = false;
@@ -169,6 +213,10 @@ window.addEventListener('keyup', (e) => {
 
     case 'ArrowLeft':
       keys.ArrowLeft.pressed = false;
+      break;
+
+    case 'ArrowDown':
+      enemy.isAttacking = false;
       break;
 
     //============ События движения для второго игрока

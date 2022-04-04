@@ -42,6 +42,44 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
+  imageSrc: './img/samuraiMack/Idle.png',
+  framesMax: 8,
+  scale: 2.5,
+  offset: {
+    x: 215,
+    y: 157,
+  },
+  sprites: {
+    idle: {
+      imageSrc: './img/samuraiMack/Idle.png',
+      framesMax: 8,
+    },
+    run: {
+      imageSrc: './img/samuraiMack/Run.png',
+      framesMax: 8,
+    },
+    jump: {
+      imageSrc: './img/samuraiMack/Jump.png',
+      framesMax: 2,
+    },
+    fall: {
+      imageSrc: './img/samuraiMack/Fall.png',
+      framesMax: 2,
+    },
+    attack1: {
+      imageSrc: './img/samuraiMack/Attack1.png',
+      framesMax: 6,
+    },
+  },
+
+  attackBox: {
+    offset: {
+      x: 100,
+      y: 50,
+    },
+    width: 160,
+    height: 50,
+  },
 });
 
 // Создаём противника
@@ -59,6 +97,44 @@ const enemy = new Fighter({
   offset: {
     x: -50,
     y: 0,
+  },
+  imageSrc: './img/kenji/Idle.png',
+  framesMax: 4,
+  scale: 2.5,
+  offset: {
+    x: 215,
+    y: 167,
+  },
+  sprites: {
+    idle: {
+      imageSrc: './img/kenji/Idle.png',
+      framesMax: 4,
+    },
+    run: {
+      imageSrc: './img/kenji/Run.png',
+      framesMax: 8,
+    },
+    jump: {
+      imageSrc: './img/kenji/Jump.png',
+      framesMax: 2,
+    },
+    fall: {
+      imageSrc: './img/kenji/Fall.png',
+      framesMax: 2,
+    },
+    attack1: {
+      imageSrc: './img/kenji/Attack1.png',
+      framesMax: 4,
+    },
+  },
+
+  attackBox: {
+    offset: {
+      x: -170,
+      y: 50,
+    },
+    width: 170,
+    height: 50,
   },
 });
 
@@ -93,29 +169,54 @@ function animate() {
   background.update();
   shop.update();
   player.update();
+
   enemy.update();
 
   player.velocity.x = 0;
   enemy.velocity.x = 0;
 
   //Логика движения для игрока один (право,лево,вверх,)
+
   if (keys.a.pressed && player.lastKey === 'a') {
     player.velocity.x = -5;
+    player.switchSprite('run');
   } else if (keys.d.pressed && player.lastKey === 'd') {
     player.velocity.x = 5;
+    player.switchSprite('run');
+  } else {
+    player.switchSprite('idle');
+  }
+
+  // Логика для прыжка игрока
+  if (player.velocity.y < 0) {
+    player.switchSprite('jump');
+  } else if (player.velocity.y > 0) {
+    player.switchSprite('fall');
   }
 
   //Логика движения для игрока два (право,лево,вверх,)
   if (keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft') {
     enemy.velocity.x = -5;
+    enemy.switchSprite('run');
   } else if (keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight') {
     enemy.velocity.x = 5;
+    enemy.switchSprite('run');
+  } else {
+    enemy.switchSprite('idle');
+  }
+
+  // Логика для прыжка второго игрока
+  if (enemy.velocity.y < 0) {
+    enemy.switchSprite('jump');
+  } else if (enemy.velocity.y > 0) {
+    enemy.switchSprite('fall');
   }
 
   //Определяем когда игроки сопрекоснутся. И атака первого игрока
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
-    player.isAttacking
+    player.isAttacking &&
+    player.frameCurrent === 4
   ) {
     player.isAttacking = false;
     console.log('first player hit');
@@ -126,15 +227,26 @@ function animate() {
     console.log('enemy.health', enemy.health);
   }
 
+  //Если игрок 1 промахнулся
+  if (player.isAttacking && player.frameCurrent === 4) {
+    player.isAttacking = false;
+  }
+
   //Определяем когда игроки сопрекоснутся. И атака второго игрока
   if (
     rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
-    enemy.isAttacking
+    enemy.isAttacking &&
+    enemy.frameCurrent === 2
   ) {
     enemy.isAttacking = false;
     player.health -= 20;
     document.querySelector('#playerHealth').style.width = player.health + '%';
     console.log('second player hit');
+  }
+
+  //Если игрок 2 промахнулся
+  if (enemy.isAttacking && enemy.frameCurrent === 2) {
+    enemy.isAttacking = false;
   }
 
   // Конец игры основнный на здоровье одного из игроков
@@ -151,6 +263,8 @@ window.addEventListener('keydown', (e) => {
     case 'd':
       keys.d.pressed = true;
       player.lastKey = 'd';
+
+      console.log('player.lastKey :', player.lastKey);
       break;
 
     case 'a':
@@ -181,7 +295,7 @@ window.addEventListener('keydown', (e) => {
       break;
 
     case 'ArrowDown':
-      enemy.isAttacking = true;
+      enemy.attack();
       break;
 
     default:

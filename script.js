@@ -70,6 +70,14 @@ const player = new Fighter({
       imageSrc: './img/samuraiMack/Attack1.png',
       framesMax: 6,
     },
+    takeHit: {
+      imageSrc: './img/samuraiMack/Take Hit - white silhouette.png',
+      framesMax: 4,
+    },
+    death: {
+      imageSrc: './img/samuraiMack/Death.png',
+      framesMax: 6,
+    },
   },
 
   attackBox: {
@@ -125,6 +133,14 @@ const enemy = new Fighter({
     attack1: {
       imageSrc: './img/kenji/Attack1.png',
       framesMax: 4,
+    },
+    takeHit: {
+      imageSrc: './img/kenji/Take hit.png',
+      framesMax: 3,
+    },
+    death: {
+      imageSrc: './img/kenji/Death.png',
+      framesMax: 7,
     },
   },
 
@@ -213,14 +229,15 @@ function animate() {
   }
 
   //Определяем когда игроки сопрекоснутся. И атака первого игрока
+  // && противник получает удар
   if (
     rectangularCollision({ rectangle1: player, rectangle2: enemy }) &&
     player.isAttacking &&
     player.frameCurrent === 4
   ) {
+    enemy.takeHit();
     player.isAttacking = false;
     console.log('first player hit');
-    enemy.health -= 20;
 
     document.querySelector('#enemyHealth').style.width = enemy.health + '%';
 
@@ -233,13 +250,15 @@ function animate() {
   }
 
   //Определяем когда игроки сопрекоснутся. И атака второго игрока
+  //И также тут добавляем вызов метода для анимации получения удара
   if (
     rectangularCollision({ rectangle1: enemy, rectangle2: player }) &&
     enemy.isAttacking &&
     enemy.frameCurrent === 2
   ) {
+    player.takeHit();
     enemy.isAttacking = false;
-    player.health -= 20;
+
     document.querySelector('#playerHealth').style.width = player.health + '%';
     console.log('second player hit');
   }
@@ -259,47 +278,56 @@ animate();
 
 // добавляем события на движение игрока вправо и влево
 window.addEventListener('keydown', (e) => {
-  switch (e.key) {
-    case 'd':
-      keys.d.pressed = true;
-      player.lastKey = 'd';
+  if (!player.dead) {
+    switch (e.key) {
+      case 'd':
+        keys.d.pressed = true;
+        player.lastKey = 'd';
+        console.log('player.lastKey :', player.lastKey);
+        break;
 
-      console.log('player.lastKey :', player.lastKey);
-      break;
+      case 'a':
+        keys.a.pressed = true;
+        player.lastKey = 'a';
+        break;
 
-    case 'a':
-      keys.a.pressed = true;
-      player.lastKey = 'a';
-      break;
+      case 'w':
+        player.velocity.y = -20;
+        break;
+      case ' ':
+        player.attack();
 
-    case 'w':
-      player.velocity.y = -20;
-      break;
-    case ' ':
-      player.attack();
+        break;
 
-      break;
-    //============ События движения для второго игрока
-    case 'ArrowRight':
-      keys.ArrowRight.pressed = true;
-      enemy.lastKey = 'ArrowRight';
-      break;
+      default:
+        break;
+    }
+  }
 
-    case 'ArrowLeft':
-      keys.ArrowLeft.pressed = true;
-      enemy.lastKey = 'ArrowLeft';
-      break;
+  if (!enemy.dead) {
+    switch (e.key) {
+      //============ События движения для второго игрока
+      case 'ArrowRight':
+        keys.ArrowRight.pressed = true;
+        enemy.lastKey = 'ArrowRight';
+        break;
 
-    case 'ArrowUp':
-      enemy.velocity.y = -20;
-      break;
+      case 'ArrowLeft':
+        keys.ArrowLeft.pressed = true;
+        enemy.lastKey = 'ArrowLeft';
+        break;
 
-    case 'ArrowDown':
-      enemy.attack();
-      break;
+      case 'ArrowUp':
+        enemy.velocity.y = -20;
+        break;
 
-    default:
-      break;
+      case 'ArrowDown':
+        enemy.attack();
+        break;
+
+      default:
+        break;
+    }
   }
 });
 

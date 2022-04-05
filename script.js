@@ -285,6 +285,7 @@ window.addEventListener('keydown', (e) => {
       case 'd':
         keys.d.pressed = true;
         player.lastKey = 'd';
+        console.log('player.lastKey', player.lastKey);
         break;
 
       case 'a':
@@ -295,9 +296,9 @@ window.addEventListener('keydown', (e) => {
       case 'w':
         player.velocity.y = -20;
         break;
+        
       case ' ':
         player.attack();
-
         break;
 
       default:

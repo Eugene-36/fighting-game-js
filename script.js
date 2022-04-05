@@ -184,6 +184,8 @@ function animate() {
 
   background.update();
   shop.update();
+  c.fillStyle = 'rgba(255, 255, 255, 0.15)';
+  c.fillRect(0, 0, canvas.width, canvas.height);
   player.update();
 
   enemy.update();
@@ -237,11 +239,10 @@ function animate() {
   ) {
     enemy.takeHit();
     player.isAttacking = false;
-    console.log('first player hit');
 
-    document.querySelector('#enemyHealth').style.width = enemy.health + '%';
-
-    console.log('enemy.health', enemy.health);
+    gsap.to('#enemyHealth', {
+      width: enemy.health + '%',
+    });
   }
 
   //Если игрок 1 промахнулся
@@ -259,8 +260,9 @@ function animate() {
     player.takeHit();
     enemy.isAttacking = false;
 
-    document.querySelector('#playerHealth').style.width = player.health + '%';
-    console.log('second player hit');
+    gsap.to('#playerHealth', {
+      width: player.health + '%',
+    });
   }
 
   //Если игрок 2 промахнулся
@@ -283,7 +285,6 @@ window.addEventListener('keydown', (e) => {
       case 'd':
         keys.d.pressed = true;
         player.lastKey = 'd';
-        console.log('player.lastKey :', player.lastKey);
         break;
 
       case 'a':

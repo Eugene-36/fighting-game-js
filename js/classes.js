@@ -146,9 +146,9 @@ class Fighter extends Sprite {
   }
   switchSprite(sprite) {
     if (this.image === this.sprites.death.image) {
-      if (this.frameCurrent === this.sprites.death.framesMax - 1) {
+      if (this.frameCurrent === this.sprites.death.framesMax - 1)
         this.dead = true;
-      }
+
       return;
     }
 
@@ -222,8 +222,6 @@ class Fighter extends Sprite {
           this.framesMax = this.sprites.death.framesMax;
           this.frameCurrent = 0;
         }
-        break;
-      default:
         break;
     }
   }

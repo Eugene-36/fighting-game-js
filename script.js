@@ -280,6 +280,7 @@ animate();
 
 // добавляем события на движение игрока вправо и влево
 window.addEventListener('keydown', (e) => {
+  console.log('player.dead', player.dead);
   if (!player.dead) {
     switch (e.key) {
       case 'd':
@@ -299,9 +300,6 @@ window.addEventListener('keydown', (e) => {
 
       case ' ':
         player.attack();
-        break;
-
-      default:
         break;
     }
   }
@@ -326,9 +324,6 @@ window.addEventListener('keydown', (e) => {
       case 'ArrowDown':
         enemy.attack();
         break;
-
-      default:
-        break;
     }
   }
 });
@@ -342,9 +337,6 @@ window.addEventListener('keyup', (e) => {
 
     case 'a':
       keys.a.pressed = false;
-      break;
-
-    default:
       break;
   }
 
@@ -364,8 +356,5 @@ window.addEventListener('keyup', (e) => {
       break;
 
     //============ События движения для второго игрока
-
-    default:
-      break;
   }
 });

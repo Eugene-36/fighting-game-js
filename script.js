@@ -46,7 +46,7 @@ const player = new Fighter({
   framesMax: 8,
   scale: 2.5,
   offset: {
-    x: 215,
+    x: -100,
     y: 157,
   },
   sprites: {
@@ -110,7 +110,7 @@ const enemy = new Fighter({
   framesMax: 4,
   scale: 2.5,
   offset: {
-    x: 215,
+    x: -50,
     y: 167,
   },
   sprites: {
@@ -296,7 +296,7 @@ window.addEventListener('keydown', (e) => {
       case 'w':
         player.velocity.y = -20;
         break;
-        
+
       case ' ':
         player.attack();
         break;

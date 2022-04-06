@@ -280,8 +280,8 @@ animate();
 
 // добавляем события на движение игрока вправо и влево
 window.addEventListener('keydown', (e) => {
-  console.log('player.dead', player.dead);
   if (!player.dead) {
+    console.log('player.dead', e.key);
     switch (e.key) {
       case 'd':
         keys.d.pressed = true;
